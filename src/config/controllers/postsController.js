@@ -1,6 +1,6 @@
 import fs from "fs"; // Importa o módulo do sistema de arquivos do Node.js
 import { getTodosPosts, criarPost, atualizarPost } from "../models/postsModel.js"; // Importa funções para obter e criar posts
-
+import gerarDescricaoComGemini from "../services/geminiService.js"
 // Função para a página inicial
 export async function index(req, res) {
     res.status(200).json({ "boas-vindas": "Index.html" }); // Envia uma mensagem de boas-vindas como resposta JSON
@@ -44,13 +44,18 @@ export async function uploadImagem(req, res) {
 export async function atualizarNovoPost(req, res) {
     const id = req.params.id;
     const urlImagem = `http://localhost:3000/${id}.png`;
-    const post = {
-        imgUrl: urlImagem,
-        descricao: req.body.descricao,
-        alt: req.body.alt
-    }
+    
 
     try {
+        const imgBuffer = fs.readFileSync(`uploads/${id}.png`)
+        const descricao = await gerarDescricaoComGemini(imgBuffer)
+
+        const post = {
+            imgUrl: urlImagem,
+            descricao: descricao,
+            alt: req.body.alt
+        }
+
         const postCriado = await atualizarPost(id, post); 
         res.status(200).json(postCriado); 
         console.log("edit 2 aqui")

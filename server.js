@@ -7,6 +7,7 @@ import routes from "./src/config/routes/postsRoutes.js";
 
 // Cria uma instância do aplicativo Express
 const app = express();
+app.use(express.static("uploads"));
 routes(app)
 
 // Inicia o servidor na porta 3000
@@ -16,7 +17,7 @@ app.listen(3000, () => {
 
 function buscarPostPorID(id){
     return posts.findIndex((post) => {
-        return post.id === Number(id)
+        return post.id === Number(id);
     })
 }
 
